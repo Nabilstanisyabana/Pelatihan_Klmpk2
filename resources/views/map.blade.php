@@ -125,13 +125,14 @@
             background: var(--surface-panel);
             border: 1px solid var(--border-strong);
             border-radius: var(--radius-sm);
-            outline: none;
             cursor: pointer;
             transition: border-color 0.15s ease;
         }
 
         .select-input:focus-visible {
             border-color: var(--primary);
+            outline: 2px solid var(--primary);
+            outline-offset: 1px;
             box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.15);
         }
 
@@ -158,6 +159,20 @@
 
         @keyframes spin {
             to { transform: rotate(360deg); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .spinner {
+                animation: none;
+            }
+            .side-drawer {
+                transition: none;
+            }
+            .point-card,
+            .btn,
+            .tab-btn {
+                transition: none;
+            }
         }
 
         /* Buttons */
@@ -200,7 +215,7 @@
 
         .btn-danger {
             background: var(--accent-depot-bg);
-            color: var(--accent-depot);
+            color: #991b1b;
             border-color: #fca5a5;
         }
         .btn-danger:hover {
@@ -208,6 +223,11 @@
         }
 
         .btn-icon {
+            min-width: 44px;
+            min-height: 44px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             padding: 6px;
             line-height: 1;
         }
@@ -352,12 +372,13 @@
             background: var(--surface-panel);
             border: 1px solid var(--border-strong);
             border-radius: var(--radius-sm);
-            outline: none;
             transition: border-color 0.15s ease;
         }
 
         .form-input:focus-visible {
             border-color: var(--primary);
+            outline: 2px solid var(--primary);
+            outline-offset: 1px;
             box-shadow: 0 0 0 2px rgba(15, 23, 42, 0.15);
         }
 
@@ -418,13 +439,13 @@
 
         .badge-depot {
             background: var(--accent-depot-bg);
-            color: var(--accent-depot);
+            color: #991b1b;
             border: 1px solid #fca5a5;
         }
 
         .badge-lokasi {
             background: var(--accent-point-bg);
-            color: var(--accent-point);
+            color: #0369a1;
             border: 1px solid #bae6fd;
         }
 
@@ -609,8 +630,8 @@
     </div>
 
     <!-- Toggle Button to Open Side Drawer -->
-    <button type="button" class="drawer-toggle-btn" onclick="toggleDrawer(true)">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+    <button type="button" class="drawer-toggle-btn" onclick="toggleDrawer(true)" aria-label="Kelola Titik">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
         <span>Kelola Titik</span>
         <span id="btnPointCounter" class="counter-badge">0</span>
     </button>
@@ -619,8 +640,8 @@
     <div id="sideDrawer" class="side-drawer">
         <div class="drawer-header">
             <h3>Manajemen Titik Lokasi</h3>
-            <button type="button" class="btn btn-subtle btn-icon" onclick="toggleDrawer(false)" title="Tutup panel">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            <button type="button" class="btn btn-subtle btn-icon" onclick="toggleDrawer(false)" aria-label="Tutup panel" title="Tutup panel">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
         </div>
 
@@ -759,9 +780,7 @@
             });
         }
 
-        // ==========================================
-        // Live Telemetry Event Handlers
-        // ==========================================
+        // Live telemetry event handlers for cursor tracking.
         map.on('mousemove', function(e) {
             document.getElementById('hudLat').innerText = e.latlng.lat.toFixed(6);
             document.getElementById('hudLng').innerText = e.latlng.lng.toFixed(6);
@@ -771,9 +790,7 @@
             document.getElementById('hudZoom').innerText = map.getZoom();
         });
 
-        // ==========================================
-        // UI Drawer Tabs & Visibility
-        // ==========================================
+        // UI drawer visibility and tab switching logic.
         function toggleDrawer(open) {
             const drawer = document.getElementById('sideDrawer');
             if (open) {
@@ -802,9 +819,7 @@
             }
         }
 
-        // ==========================================
-        // GADM GEOJSON Service & Rendering
-        // ==========================================
+        // GADM GeoJSON service and polygon rendering.
         function loadGadmLevel(level, autoFitGadm = false) {
             level = String(level);
             activeGadmLevel = level;
@@ -918,9 +933,7 @@
                 });
         }
 
-        // ==========================================
-        // CRUD Titik Depot & Lokasi
-        // ==========================================
+        // CRUD operations for depot and location markers.
         function fitMapToDepots(animate = false) {
             if (!depotPointsData || depotPointsData.length === 0) return;
 
@@ -986,7 +999,7 @@
                         </div>
                         <div style="display: flex; gap: 4px; margin-top: 8px;">
                             <button onclick="editPoint('${item.id}')" style="flex: 1; padding: 4px 8px; font-size: 11px; font-weight: 600; background: #0f172a; color: white; border: none; border-radius: 4px; cursor: pointer;">Edit</button>
-                            <button onclick="deletePoint('${item.id}')" style="flex: 1; padding: 4px 8px; font-size: 11px; font-weight: 600; background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; border-radius: 4px; cursor: pointer;">Hapus</button>
+                            <button onclick="deletePoint('${item.id}')" style="flex: 1; padding: 4px 8px; font-size: 11px; font-weight: 600; background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; border-radius: 4px; cursor: pointer;">Hapus</button>
                         </div>
                     </div>
                 `;
@@ -1222,9 +1235,7 @@
             });
         }
 
-        // ==========================================
-        // Inisialisasi Awal
-        // ==========================================
+        // Initial setup and state restoration.
         let initialLevel = '0';
         try {
             const savedLevel = localStorage.getItem('gis_gadm_selected_level');
