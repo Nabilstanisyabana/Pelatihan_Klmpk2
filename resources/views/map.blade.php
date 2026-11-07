@@ -736,6 +736,7 @@
     <script>
         // 1. Inisialisasi Peta Leaflet (Center Indonesia)
         const map = L.map('map', {
+            preferCanvas: true,
             zoomControl: false
         }).setView([-2.548926, 118.014863], 5);
 
@@ -780,10 +781,26 @@
             });
         }
 
-        // Live telemetry event handlers for cursor tracking.
+        // Live telemetry event handlers with requestAnimationFrame throttling.
+        const hudLatElem = document.getElementById('hudLat');
+        const hudLngElem = document.getElementById('hudLng');
+        let hudRafPending = false;
+        let lastLat = null;
+        let lastLng = null;
+
         map.on('mousemove', function(e) {
-            document.getElementById('hudLat').innerText = e.latlng.lat.toFixed(6);
-            document.getElementById('hudLng').innerText = e.latlng.lng.toFixed(6);
+            lastLat = e.latlng.lat;
+            lastLng = e.latlng.lng;
+            if (!hudRafPending) {
+                hudRafPending = true;
+                requestAnimationFrame(function() {
+                    if (hudLatElem && hudLngElem && lastLat !== null) {
+                        hudLatElem.innerText = lastLat.toFixed(6);
+                        hudLngElem.innerText = lastLng.toFixed(6);
+                    }
+                    hudRafPending = false;
+                });
+            }
         });
 
         map.on('zoomend', function() {
@@ -817,6 +834,32 @@
                 btnList.classList.remove('active');
                 btnForm.classList.add('active');
             }
+        }
+
+        // In-memory cache for Open-Meteo elevation requests to prevent duplicate network calls.
+        const elevationCache = new Map();
+        function loadElevationData(lat, lng, targetId) {
+            const cacheKey = `${parseFloat(lat).toFixed(4)},${parseFloat(lng).toFixed(4)}`;
+            if (elevationCache.has(cacheKey)) {
+                const el = document.getElementById(targetId);
+                if (el) el.innerHTML = `ALT: <strong>${elevationCache.get(cacheKey)} mdpl</strong>`;
+                return;
+            }
+
+            fetch(`https://api.open-meteo.com/v1/elevation?latitude=${lat}&longitude=${lng}`)
+                .then(res => res.json())
+                .then(elevData => {
+                    const el = document.getElementById(targetId);
+                    if (el && elevData && elevData.elevation && elevData.elevation.length > 0) {
+                        const val = elevData.elevation[0];
+                        elevationCache.set(cacheKey, val);
+                        el.innerHTML = `ALT: <strong>${val} mdpl</strong>`;
+                    }
+                })
+                .catch(() => {
+                    const el = document.getElementById(targetId);
+                    if (el) el.innerHTML = `ALT: -`;
+                });
         }
 
         // GADM GeoJSON service and polygon rendering.
@@ -899,19 +942,7 @@
                                 `;
 
                                 layer.bindPopup(popupHtml).openPopup(e.latlng);
-
-                                fetch(`https://api.open-meteo.com/v1/elevation?latitude=${lat}&longitude=${lng}`)
-                                    .then(res => res.json())
-                                    .then(elevData => {
-                                        const el = document.getElementById(altId);
-                                        if (el && elevData && elevData.elevation && elevData.elevation.length > 0) {
-                                            el.innerHTML = `ALT: <strong>${elevData.elevation[0]} mdpl</strong>`;
-                                        }
-                                    })
-                                    .catch(() => {
-                                        const el = document.getElementById(altId);
-                                        if (el) el.innerHTML = `ALT: -`;
-                                    });
+                                loadElevationData(lat, lng, altId);
                             });
                         }
                     }).addTo(map);
@@ -1079,19 +1110,7 @@
             `;
 
             clickTempMarker.bindPopup(mapPopupHtml).openPopup();
-
-            fetch(`https://api.open-meteo.com/v1/elevation?latitude=${lat}&longitude=${lng}`)
-                .then(res => res.json())
-                .then(data => {
-                    const el = document.getElementById(mapAltId);
-                    if (el && data && data.elevation && data.elevation.length > 0) {
-                        el.innerHTML = `ALT: <strong>${data.elevation[0]} mdpl</strong>`;
-                    }
-                })
-                .catch(() => {
-                    const el = document.getElementById(mapAltId);
-                    if (el) el.innerHTML = `ALT: -`;
-                });
+            loadElevationData(lat, lng, mapAltId);
         });
 
         // Form Submit: Add or Update Point
