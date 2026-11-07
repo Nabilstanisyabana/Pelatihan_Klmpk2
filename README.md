@@ -1,59 +1,406 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🚚 GIS Logistik & Sistem Distribusi Produk (Wilayah Indramayu)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Sistem Informasi Geografis (Web GIS) berbasis web terpadu untuk manajemen produk, penugasan armada kurir, pemantauan rute jalan raya secara *real-time*, dan visualisasi analitik pengiriman logistik di wilayah Kabupaten Indramayu dan sekitarnya.
 
-## About Laravel
+Aplikasi ini dikembangkan untuk memenuhi capaian pelatihan/tugas kelompok yang mencakup:
+1. **Dashboard Analytic**
+2. **Manajemen Produk (CRUD & Penugasan Kurir)**
+3. **Leaflet Map GIS (Informasi Produk, Penentuan Lokasi Interaktif, dan Penyambungan Rute Kurir)**
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## ✨ Fitur-Fitur Utama
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 1. 📊 Dashboard Analytic (Analitik Logistik & Distribusi)
+- **Kartu Metrik Eksekutif (Real-Time):**
+  - Total Produk dan Kuantitas Stok keseluruhan.
+  - Estimasi Total Nilai Finansial Barang/Logistik (Rp).
+  - Status Pengiriman: *Sedang Dikirim*, *Sukses Terkirim*, *Menunggu Kurir*, dan *Diproses*.
+  - Status Kesiapan Armada: Rasio kurir yang sedang bertugas (*on-delivery*) vs kurir yang siap berangkat (*available*).
+- **Visualisasi Interaktif (Chart.js):**
+  - **Doughnut Chart:** Persentase proporsi status pengiriman paket.
+  - **Bar Chart:** Distribusi jumlah produk berdasarkan kategori barang.
+- **Aktivitas Pengiriman Terbaru:** Riwayat aktivitas 6 pengiriman teranyar lengkap dengan badge status dan tombol langsung `📍 Peta` untuk melacak posisi paket di peta.
+- **Monitoring Beban Kurir:** Ringkasan jumlah antaran aktif tiap personil kurir.
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### 2. 📦 Manajemen Produk (CRUD + Penugasan Kurir)
+- **Data Produk Komprehensif:**
+  - SKU produk (otomatis/kustom), Nama Produk, Kategori, Harga (Rp), Stok/Qty, Berat estimasi (kg), dan Deskripsi/Catatan.
+  - Data Penerima: Nama Lengkap dan Nomor Telepon/WhatsApp.
+  - **Penugasan Kurir:** Menugaskan kurir armada langsung ke pesanan barang.
+  - **Dua Opsi Penentuan Lokasi Pengantaran:**
+    1. **Input Alamat + Pencarian Otomatis:** Ketik alamat dan klik *"Cari Alamat"* (Geocoding otomatis OpenStreetMap Nominatim).
+    2. **Interactive Mini-Map GIS Picker:** Klik pada peta mini di form modal untuk menggeser pin lokasi secara langsung; koordinat Latitude, Longitude, dan nama alamat/wilayah otomatis terdeteksi (*Reverse Geocoding*).
+- **Operasi CRUD Lengkap:**
+  - Tambah Produk Baru (*Create*).
+  - Tabel Data Responsif dengan Pencarian Realtime, Filter Kategori, Filter Status, dan Filter Kurir (*Read*).
+  - Edit Data Produk, Lokasi, Kurir, dan Status (*Update*).
+  - Hapus Produk (*Delete*).
+  - **Ekspor Data:** Fitur unduh seluruh data rekap pengiriman ke format file CSV/Excel.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+### 3. 🗺️ Leaflet Map GIS & Penyambungan Rute Kurir (Routing Machine)
+- **Marker Dinamis Berbasis Status Pengiriman:**
+  - 🔴 **Depot/Gudang Pusat:** Titik awal keberangkatan distribusi (Depot Indramayu Pusat).
+  - 🔵 **Sedang Dikirim:** Paket sedang dalam perjalanan oleh kurir.
+  - 🟢 **Sukses Terkirim:** Paket telah diterima oleh penerima.
+  - 🟡 **Menunggu Kurir / Diproses:** Paket masih dalam gudang/menunggu penugasan.
+- **Informasi Produk Lengkap pada Popup:**
+  - SKU, Nama Barang, Kategori, Harga, Nama & Kontak Penerima, Alamat Tujuan, Kurir yang bertugas, serta koordinat Lat/Lng.
+  - **Tombol Ubah Status Instan (`✓ Selesai`):** Konfirmasi barang telah terkirim langsung dari popup peta tanpa reload halaman.
+- **Penyambungan Rute Kurir (OSRM Road Network Routing):**
+  - **Rute Tunggal (Per Produk):** Tombol *"🗺️ Sambung Rute"* menarik rute jalan raya resmi dari Depot Pusat ke alamat tujuan dengan kalkulasi jarak kilometer dan estimasi waktu tempuh.
+  - **Rute Multi-Titik (*Multi-Stop Route*):** Tombol *"🛣️ Sambungkan Rute Kurir"* menyambungkan seluruh paket yang ditugaskan ke kurir tertentu secara berantai dari Depot Pusat ke Stop 1, Stop 2, Stop 3, dst., lengkap dengan nomor urutan stop di peta.
+- **Fitur Tambah Produk Cepat via Klik Peta Utama:**
+  - Klik di sembarang titik pada peta Leaflet utama untuk memunculkan popup *"📍 Titik Lokasi Dipilih"* dan tombol *"+ Buat Produk di Titik Ini"*.
+- **Layer Batas Wilayah GeoJSON GADM:**
+  - Dukungan visualisasi layer batas administratif GADM Level 0 (Negara), Level 1 (Provinsi), Level 2 (Kabupaten/Kota), Level 3 (Kecamatan), hingga Level 4 (Desa).
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+### 4. 🛵 Manajemen Armada Kurir
+- Pengelolaan personil kurir (Nama, Kontak WhatsApp/Telepon, Jenis Kendaraan seperti Motor/Mobil Box/Pickup, Nomor Polisi/Plat Kendaraan, dan Status Ketersediaan).
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## 🛠️ Teknologi yang Digunakan (Tech Stack)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+| Komponen | Teknologi |
+| :--- | :--- |
+| **Backend Framework** | Laravel 12 (PHP 8.2+) |
+| **Database** | MySQL / MariaDB |
+| **Database ORM** | Eloquent ORM |
+| **Web GIS Engine** | Leaflet.js v1.9.4 |
+| **Basemap Layer** | OpenStreetMap (OSM) Tiles |
+| **Geocoding & Reverse Geocoding** | OpenStreetMap Nominatim API |
+| **Routing / Navigasi Rute Jalan** | OSRM (Open Source Routing Machine) |
+| **Data Visualisasi Grafik** | Chart.js |
+| **Antarmuka / UI** | HTML5, CSS3, Plus Jakarta Sans, JetBrains Mono, Vanilla JS (SPA Style) |
+| **Testing** | PHPUnit / Laravel Feature & Unit Tests |
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 📁 Struktur Direktori Penting
 
-## Security Vulnerabilities
+```text
+├── app/
+│   ├── Http/Controllers/
+│   │   ├── DashboardController.php   # Endpoint API metrik & grafik analitik
+│   │   ├── ProductController.php     # Endpoint API CRUD produk & penugasan kurir
+│   │   ├── CourierController.php     # Endpoint API armada kurir
+│   │   ├── DepotController.php       # Controller data depot/gudang sampel
+│   │   └── GisController.php         # Controller halaman peta & GeoJSON GADM
+│   └── Models/
+│       ├── Product.php               # Model relasi produk & pengiriman
+│       ├── Courier.php               # Model kurir logistik
+│       └── User.php
+├── database/
+│   ├── migrations/
+│   │   └── *_create_couriers_and_products_tables.php
+│   └── seeders/
+│       ├── DatabaseSeeder.php
+│       └── ProductAndCourierSeeder.php # Data sampel 10 produk Indramayu & 5 kurir
+├── resources/
+│   └── views/
+│       └── map.blade.php             # UI Front-End terpadu (SPA Dashboard, CRUD, GIS Map)
+├── routes/
+│   └── web.php                       # Route web & seluruh endpoint REST API
+├── storage/app/public/json/gadm/     # File GeoJSON batas wilayah Indonesia & Indramayu
+└── tests/Feature/
+    └── DistributionSystemTest.php    # Automated feature test (CRUD, API, Page render)
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## 🚀 Panduan Instalasi & Menjalankan Proyek
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 1. Prasyarat Sistem
+- PHP >= 8.2
+- Composer
+- MySQL / MariaDB (misal via XAMPP atau Laragon)
+- Git
+
+### 2. Kloning Repositori
+```bash
+git clone https://github.com/rizkyaa-dev/Pelatihan_Klmpk2.git
+cd Pelatihan_Klmpk2
+```
+
+### 3. Konfigurasi Environment (`.env`)
+Salin file `.env.example` ke `.env`:
+```bash
+cp .env.example .env
+```
+Buka file `.env` dan pastikan konfigurasi database sudah sesuai:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=pelatihan_web
+DB_USERNAME=root
+DB_PASSWORD=
+```
+*(Buat database kosong bernama `pelatihan_web` di MySQL/phpMyAdmin jika belum ada).*
+
+### 4. Install Dependensi PHP
+```bash
+composer install
+```
+
+### 5. Generate Application Key
+```bash
+php artisan key:generate
+```
+
+### 6. Jalankan Migrasi & Seeder Database
+Jalankan perintah ini untuk membuat tabel `couriers`, `products`, serta mengisi data sampel awal:
+```bash
+php artisan migrate --seed
+```
+
+### 7. Jalankan Server Aplikasi
+```bash
+php artisan serve
+```
+Akses aplikasi melalui browser di:
+👉 **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
+
+---
+
+## 🧪 Menjalankan Pengujian Otomatis (Automated Tests)
+Untuk memverifikasi bahwa seluruh endpoint API dan halaman berjalan lancar 100%:
+```bash
+php artisan test
+```
+
+---
+
+## 📡 Daftar Endpoint API
+
+| Method | Endpoint | Keterangan |
+| :--- | :--- | :--- |
+| `GET` | `/` | Tampilan Web Utama (Dashboard, CRUD, Map, Kurir) |
+| `GET` | `/api/analytics` | Mengambil data metrik dan statistik grafik |
+| `GET` | `/api/products` | Mengambil daftar produk (mendukung filter & search) |
+| `POST` | `/api/products` | Menambah produk baru + koordinat lokasi + kurir |
+| `GET` | `/api/products/{id}` | Mengambil detail 1 produk |
+| `PUT` | `/api/products/{id}` | Memperbarui data produk & lokasi |
+| `PATCH` | `/api/products/{id}/status` | Mengubah status pengiriman secara cepat |
+| `DELETE` | `/api/products/{id}` | Menghapus data produk |
+| `GET` | `/api/couriers` | Mengambil daftar kurir armada |
+| `POST` | `/api/couriers` | Menambahkan data kurir baru |
+| `PUT` | `/api/couriers/{id}` | Mengedit data kurir |
+| `DELETE` | `/api/couriers/{id}` | Menghapus data kurir |
+| `GET` | `/api/depots` | Mengambil data titik depot distribusi |
+| `GET` | `/api/geojson/gadm/{level}` | Mengambil data batas wilayah GeoJSON (Lvl 0-4) |
+
+---
+
+## 👥 Pengembang (Kelompok 2)
+Proyek ini dikembangkan oleh **Kelompok 2** dalam rangka pelatihan/mata kuliah Sistem Informasi Geografis (GIS) dan Pengembangan Web.
+# 🚚 GIS Logistik & Sistem Distribusi Produk (Wilayah Indramayu)
+
+Sistem Informasi Geografis (Web GIS) berbasis web terpadu untuk manajemen produk, penugasan armada kurir, pemantauan rute jalan raya secara *real-time*, dan visualisasi analitik pengiriman logistik di wilayah Kabupaten Indramayu dan sekitarnya.
+
+Aplikasi ini dikembangkan untuk memenuhi capaian pelatihan/tugas kelompok yang mencakup:
+1. **Dashboard Analytic**
+2. **Manajemen Produk (CRUD & Penugasan Kurir)**
+3. **Leaflet Map GIS (Informasi Produk, Penentuan Lokasi Interaktif, dan Penyambungan Rute Kurir)**
+
+---
+
+## ✨ Fitur-Fitur Utama
+
+### 1. 📊 Dashboard Analytic (Analitik Logistik & Distribusi)
+- **Kartu Metrik Eksekutif (Real-Time):**
+  - Total Produk dan Kuantitas Stok keseluruhan.
+  - Estimasi Total Nilai Finansial Barang/Logistik (Rp).
+  - Status Pengiriman: *Sedang Dikirim*, *Sukses Terkirim*, *Menunggu Kurir*, dan *Diproses*.
+  - Status Kesiapan Armada: Rasio kurir yang sedang bertugas (*on-delivery*) vs kurir yang siap berangkat (*available*).
+- **Visualisasi Interaktif (Chart.js):**
+  - **Doughnut Chart:** Persentase proporsi status pengiriman paket.
+  - **Bar Chart:** Distribusi jumlah produk berdasarkan kategori barang.
+- **Aktivitas Pengiriman Terbaru:** Riwayat aktivitas 6 pengiriman teranyar lengkap dengan badge status dan tombol langsung `📍 Peta` untuk melacak posisi paket di peta.
+- **Monitoring Beban Kurir:** Ringkasan jumlah antaran aktif tiap personil kurir.
+
+---
+
+### 2. 📦 Manajemen Produk (CRUD + Penugasan Kurir)
+- **Data Produk Komprehensif:**
+  - SKU produk (otomatis/kustom), Nama Produk, Kategori, Harga (Rp), Stok/Qty, Berat estimasi (kg), dan Deskripsi/Catatan.
+  - Data Penerima: Nama Lengkap dan Nomor Telepon/WhatsApp.
+  - **Penugasan Kurir:** Menugaskan kurir armada langsung ke pesanan barang.
+  - **Dua Opsi Penentuan Lokasi Pengantaran:**
+    1. **Input Alamat + Pencarian Otomatis:** Ketik alamat dan klik *"Cari Alamat"* (Geocoding otomatis OpenStreetMap Nominatim).
+    2. **Interactive Mini-Map GIS Picker:** Klik pada peta mini di form modal untuk menggeser pin lokasi secara langsung; koordinat Latitude, Longitude, dan nama alamat/wilayah otomatis terdeteksi (*Reverse Geocoding*).
+- **Operasi CRUD Lengkap:**
+  - Tambah Produk Baru (*Create*).
+  - Tabel Data Responsif dengan Pencarian Realtime, Filter Kategori, Filter Status, dan Filter Kurir (*Read*).
+  - Edit Data Produk, Lokasi, Kurir, dan Status (*Update*).
+  - Hapus Produk (*Delete*).
+  - **Ekspor Data:** Fitur unduh seluruh data rekap pengiriman ke format file CSV/Excel.
+
+---
+
+### 3. 🗺️ Leaflet Map GIS & Penyambungan Rute Kurir (Routing Machine)
+- **Marker Dinamis Berbasis Status Pengiriman:**
+  - 🔴 **Depot/Gudang Pusat:** Titik awal keberangkatan distribusi (Depot Indramayu Pusat).
+  - 🔵 **Sedang Dikirim:** Paket sedang dalam perjalanan oleh kurir.
+  - 🟢 **Sukses Terkirim:** Paket telah diterima oleh penerima.
+  - 🟡 **Menunggu Kurir / Diproses:** Paket masih dalam gudang/menunggu penugasan.
+- **Informasi Produk Lengkap pada Popup:**
+  - SKU, Nama Barang, Kategori, Harga, Nama & Kontak Penerima, Alamat Tujuan, Kurir yang bertugas, serta koordinat Lat/Lng.
+  - **Tombol Ubah Status Instan (`✓ Selesai`):** Konfirmasi barang telah terkirim langsung dari popup peta tanpa reload halaman.
+- **Penyambungan Rute Kurir (OSRM Road Network Routing):**
+  - **Rute Tunggal (Per Produk):** Tombol *"🗺️ Sambung Rute"* menarik rute jalan raya resmi dari Depot Pusat ke alamat tujuan dengan kalkulasi jarak kilometer dan estimasi waktu tempuh.
+  - **Rute Multi-Titik (*Multi-Stop Route*):** Tombol *"🛣️ Sambungkan Rute Kurir"* menyambungkan seluruh paket yang ditugaskan ke kurir tertentu secara berantai dari Depot Pusat ke Stop 1, Stop 2, Stop 3, dst., lengkap dengan nomor urutan stop di peta.
+- **Fitur Tambah Produk Cepat via Klik Peta Utama:**
+  - Klik di sembarang titik pada peta Leaflet utama untuk memunculkan popup *"📍 Titik Lokasi Dipilih"* dan tombol *"+ Buat Produk di Titik Ini"*.
+- **Layer Batas Wilayah GeoJSON GADM:**
+  - Dukungan visualisasi layer batas administratif GADM Level 0 (Negara), Level 1 (Provinsi), Level 2 (Kabupaten/Kota), Level 3 (Kecamatan), hingga Level 4 (Desa).
+
+---
+
+### 4. 🛵 Manajemen Armada Kurir
+- Pengelolaan personil kurir (Nama, Kontak WhatsApp/Telepon, Jenis Kendaraan seperti Motor/Mobil Box/Pickup, Nomor Polisi/Plat Kendaraan, dan Status Ketersediaan).
+
+---
+
+## 🛠️ Teknologi yang Digunakan (Tech Stack)
+
+| Komponen | Teknologi |
+| :--- | :--- |
+| **Backend Framework** | Laravel 12 (PHP 8.2+) |
+| **Database** | MySQL / MariaDB |
+| **Database ORM** | Eloquent ORM |
+| **Web GIS Engine** | Leaflet.js v1.9.4 |
+| **Basemap Layer** | OpenStreetMap (OSM) Tiles |
+| **Geocoding & Reverse Geocoding** | OpenStreetMap Nominatim API |
+| **Routing / Navigasi Rute Jalan** | OSRM (Open Source Routing Machine) |
+| **Data Visualisasi Grafik** | Chart.js |
+| **Antarmuka / UI** | HTML5, CSS3, Plus Jakarta Sans, JetBrains Mono, Vanilla JS (SPA Style) |
+| **Testing** | PHPUnit / Laravel Feature & Unit Tests |
+
+---
+
+## 📁 Struktur Direktori Penting
+
+```text
+├── app/
+│   ├── Http/Controllers/
+│   │   ├── DashboardController.php   # Endpoint API metrik & grafik analitik
+│   │   ├── ProductController.php     # Endpoint API CRUD produk & penugasan kurir
+│   │   ├── CourierController.php     # Endpoint API armada kurir
+│   │   ├── DepotController.php       # Controller data depot/gudang sampel
+│   │   └── GisController.php         # Controller halaman peta & GeoJSON GADM
+│   └── Models/
+│       ├── Product.php               # Model relasi produk & pengiriman
+│       ├── Courier.php               # Model kurir logistik
+│       └── User.php
+├── database/
+│   ├── migrations/
+│   │   └── *_create_couriers_and_products_tables.php
+│   └── seeders/
+│       ├── DatabaseSeeder.php
+│       └── ProductAndCourierSeeder.php # Data sampel 10 produk Indramayu & 5 kurir
+├── resources/
+│   └── views/
+│       └── map.blade.php             # UI Front-End terpadu (SPA Dashboard, CRUD, GIS Map)
+├── routes/
+│   └── web.php                       # Route web & seluruh endpoint REST API
+├── storage/app/public/json/gadm/     # File GeoJSON batas wilayah Indonesia & Indramayu
+└── tests/Feature/
+    └── DistributionSystemTest.php    # Automated feature test (CRUD, API, Page render)
+```
+
+---
+
+## 🚀 Panduan Instalasi & Menjalankan Proyek
+
+### 1. Prasyarat Sistem
+- PHP >= 8.2
+- Composer
+- MySQL / MariaDB (misal via XAMPP atau Laragon)
+- Git
+
+### 2. Kloning Repositori
+```bash
+git clone https://github.com/rizkyaa-dev/Pelatihan_Klmpk2.git
+cd Pelatihan_Klmpk2
+```
+
+### 3. Konfigurasi Environment (`.env`)
+Salin file `.env.example` ke `.env`:
+```bash
+cp .env.example .env
+```
+Buka file `.env` dan pastikan konfigurasi database sudah sesuai:
+```env
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=pelatihan_web
+DB_USERNAME=root
+DB_PASSWORD=
+```
+*(Buat database kosong bernama `pelatihan_web` di MySQL/phpMyAdmin jika belum ada).*
+
+### 4. Install Dependensi PHP
+```bash
+composer install
+```
+
+### 5. Generate Application Key
+```bash
+php artisan key:generate
+```
+
+### 6. Jalankan Migrasi & Seeder Database
+Jalankan perintah ini untuk membuat tabel `couriers`, `products`, serta mengisi data sampel awal:
+```bash
+php artisan migrate --seed
+```
+
+### 7. Jalankan Server Aplikasi
+```bash
+php artisan serve
+```
+Akses aplikasi melalui browser di:
+👉 **[http://127.0.0.1:8000](http://127.0.0.1:8000)**
+
+---
+
+## 🧪 Menjalankan Pengujian Otomatis (Automated Tests)
+Untuk memverifikasi bahwa seluruh endpoint API dan halaman berjalan lancar 100%:
+```bash
+php artisan test
+```
+
+---
+
+## 📡 Daftar Endpoint API
+
+| Method | Endpoint | Keterangan |
+| :--- | :--- | :--- |
+| `GET` | `/` | Tampilan Web Utama (Dashboard, CRUD, Map, Kurir) |
+| `GET` | `/api/analytics` | Mengambil data metrik dan statistik grafik |
+| `GET` | `/api/products` | Mengambil daftar produk (mendukung filter & search) |
+| `POST` | `/api/products` | Menambah produk baru + koordinat lokasi + kurir |
+| `GET` | `/api/products/{id}` | Mengambil detail 1 produk |
+| `PUT` | `/api/products/{id}` | Memperbarui data produk & lokasi |
+| `PATCH` | `/api/products/{id}/status` | Mengubah status pengiriman secara cepat |
+| `DELETE` | `/api/products/{id}` | Menghapus data produk |
+| `GET` | `/api/couriers` | Mengambil daftar kurir armada |
+| `POST` | `/api/couriers` | Menambahkan data kurir baru |
+| `PUT` | `/api/couriers/{id}` | Mengedit data kurir |
+| `DELETE` | `/api/couriers/{id}` | Menghapus data kurir |
+| `GET` | `/api/depots` | Mengambil data titik depot distribusi |
+| `GET` | `/api/geojson/gadm/{level}` | Mengambil data batas wilayah GeoJSON (Lvl 0-4) |
+
+---
+
+## 👥 Pengembang (Kelompok 2)
+Proyek ini dikembangkan oleh **Kelompok 2** dalam rangka pelatihan/mata kuliah Sistem Informasi Geografis (GIS) dan Pengembangan Web.
